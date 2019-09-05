@@ -26,12 +26,12 @@ public class ProductServiceTest {
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
 
         //when
-        Product maybeProduct = productService.getProductById(product.getId());
+        Optional<Product> maybeProduct = productService.getProductById(product.getId());
 
         //then
-        assertNotNull(maybeProduct);
-        assertEquals(maybeProduct.getId(), product.getId());
-        assertEquals(maybeProduct.getName(), product.getName());
+        assertTrue(maybeProduct.isPresent());
+        assertEquals(maybeProduct.get().getId(), product.getId());
+        assertEquals(maybeProduct.get().getName(), product.getName());
 
     }
 }
