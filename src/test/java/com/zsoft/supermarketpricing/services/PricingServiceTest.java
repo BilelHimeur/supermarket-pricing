@@ -3,6 +3,7 @@ package com.zsoft.supermarketpricing.services;
 import com.zsoft.supermarketpricing.exceptions.ProductNotFoundException;
 import com.zsoft.supermarketpricing.models.Price;
 import com.zsoft.supermarketpricing.models.Product;
+import com.zsoft.supermarketpricing.models.enums.Formula;
 import com.zsoft.supermarketpricing.models.enums.Unit;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -42,7 +43,7 @@ public class PricingServiceTest {
     }
 
     @Test
-    public void getPricingByWeightTest() {
+    public void getPricingByWeightTest() throws ProductNotFoundException {
         // given
         Price price = Price.builder()
                 .unit(Unit.OUNCE)
@@ -61,5 +62,25 @@ public class PricingServiceTest {
         // then
         assertTrue(priceByWeight ==  60 * 1 / 16F * 7);
 
+    }
+
+    @Test
+    public void getPriceUsingFormulaTest() {
+        Price price = Price.builder()
+                .unit(Unit.OUNCE)
+                .value(2)
+                .build();
+        Product product = Product.builder()
+                .id(2)
+                .name("productName")
+                .price(price)
+                .build();
+        float quantity = 7;
+        // when
+        when(productService.getProductById(2)).thenReturn(Optional.of(product));
+        double priceFromFormula = pricingService.getPriceUsingFormula(product.getId(), quantity, Formula.THREE_FOR_ONE);
+
+        // then
+        assertTrue(priceFromFormula == 4);
     }
 }
