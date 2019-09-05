@@ -1,9 +1,11 @@
 package com.zsoft.supermarketpricing.services;
 
+import com.zsoft.supermarketpricing.exceptions.FormulaException;
 import com.zsoft.supermarketpricing.exceptions.ProductNotFoundException;
 import com.zsoft.supermarketpricing.models.Product;
 import com.zsoft.supermarketpricing.models.enums.Formula;
 import com.zsoft.supermarketpricing.models.enums.Unit;
+import com.zsoft.supermarketpricing.utils.FormulaUtils;
 import com.zsoft.supermarketpricing.utils.UnitConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,12 @@ public class PricingService {
         }
     }
 
-    public double getPriceUsingFormula (long productId, float quantity, Formula formula) {
-        return 0;
+    public double getPriceUsingFormula (long productId, float quantity, Formula formula) throws FormulaException, ProductNotFoundException {
+        Optional<Product> productOptional = productService.getProductById(productId);
+        if (productOptional.isPresent()) {
+            return FormulaUtils.getPriceFromFormula(quantity, formula, productOptional.get().getPrice().getValue());
+        } else {
+            throw new ProductNotFoundException(productId);
+        }
     }
 }
